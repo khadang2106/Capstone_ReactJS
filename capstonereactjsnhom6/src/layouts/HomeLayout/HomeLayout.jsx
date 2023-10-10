@@ -7,9 +7,7 @@ export default function HomeLayout() {
   return (
     <div>
       <Header />
-
       <Outlet />
-
       <Footer />
     </div>
   );
