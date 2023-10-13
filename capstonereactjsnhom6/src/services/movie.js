@@ -14,6 +14,29 @@ class MovieService {
         url: `/QuanLyPhim/LayThongTinPhim?MaPhim=${movieId}`,
         method: "GET",
       });
+  };
+  //thêm phim
+  addMovie(formData) {
+    return request({
+      url: "/quanlyphim/themphimuploadhinh",
+      method: "POST",
+      data: formData
+    });
+  };
+  //cập nhật phim
+  updateMovie(formData) {
+    return request({
+      url: "/QuanLyPhim/CapNhatPhimUpload",
+      method: "POST",
+      data: formData
+    });
+  };
+  //xóa phim
+  deleteMovie(maPhim) {
+    return request({
+      url: `/QuanLyPhim/XoaPhim?MaPhim=${maPhim}`,
+      method: "DELETE",
+    });
   }
 }
 //chỗ này new đối tượng trong đây để giải quyết vấn đề mỗi component khác nhau thì đều phải new hết
