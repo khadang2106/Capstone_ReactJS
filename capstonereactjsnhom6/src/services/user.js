@@ -45,6 +45,12 @@ class UserService {
       url: `/QuanLyNguoiDung/TimKiemNguoiDung?tuKhoa=${query}&maNhom=GP01`,
       method: "GET",
     });
+  };
+  fetchUserTypes() {
+    return request({
+      url: "/QuanLyNguoiDung/LayDanhSachLoaiNguoiDung",
+      method: "GET",
+    });
   }
 }
 export const userService = new UserService();
