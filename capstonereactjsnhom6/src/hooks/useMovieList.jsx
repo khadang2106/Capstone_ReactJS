@@ -1,15 +1,25 @@
 //đây là hook gọi danh sách phim
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react';
 import { movieService } from '../services/movie';
+import { LoadingContext } from '../contexts/LoadingContext/LoadingContext';
 
 export default function useMovieList() {
-    const [movieList,setMovieList] = useState([]);
-    const fetchMovieList = async () => {
-        const result = await movieService.fetMovieListApi();
-        setMovieList(result.data.content);
-    }
-    useEffect(()=>{
-        fetchMovieList();
-    },[])
+  const [loadingState, setLoadingState] = useContext(LoadingContext);
+  const [movieList, setMovieList] = useState([]);
+
+  const fetchMovieList = async () => {
+    setLoadingState({
+      isLoading: true,
+    });
+
+    const result = await movieService.fetMovieListApi();
+    setMovieList(result.data.content);
+    setLoadingState({
+      isLoading: false,
+    });
+  };
+  useEffect(() => {
+    fetchMovieList();
+  }, []);
   return movieList;
 }
