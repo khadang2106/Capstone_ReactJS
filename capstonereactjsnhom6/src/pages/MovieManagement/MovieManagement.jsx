@@ -8,7 +8,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 export default function MovieManagement() {
   const movieList = useMovieList();
-  console.log(movieList);
   //phân trang
   const [currentPage, setCurrentPage] = useState(1);
   const [moviesPerPage] = useState(10);
@@ -17,11 +16,6 @@ export default function MovieManagement() {
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
-  const currentMovies = movieList.slice(indexOfFirstMovie, indexOfLastMovie);
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(movieList.length / moviesPerPage); i++) {
-    pageNumbers.push(i);
-  }
 
   const [state, setState] = useState({
     tenPhim: "",
@@ -47,13 +41,12 @@ export default function MovieManagement() {
   const formatDateToSend = (dateString) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
+    const month = String(date.getMonth() + 1).padStart(2, "0"); 
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(state);
     let formData = new FormData();
     formData.append("tenPhim", state.tenPhim);
     formData.append("trailer", state.trailer);
@@ -113,7 +106,6 @@ export default function MovieManagement() {
     setIsEditing(true);
     try {
       const response = await movieService.fetMovieDetailApi(maPhim);
-      console.log(response);
       if (response.data) {
         setState({
           ...response.data.content,
@@ -138,8 +130,6 @@ export default function MovieManagement() {
       if (window.confirm("Bạn có chắc muốn xóa phim này không?")) {
         await movieService.deleteMovie(maPhim);
         alert("Xóa phim thành công!");
-        // Cập nhật lại danh sách phim sau khi xóa
-        // ... (có thể gọi lại hàm fetch danh sách phim ở đây)
       }
     } catch (error) {
       console.error("Lỗi khi xóa phim:", error);
@@ -169,12 +159,10 @@ export default function MovieManagement() {
     try {
       const response = await movieService.getHeThongRap();
       if (response.data) {
-        // Lưu thông tin hệ thống rạp vào state dưới dạng mảng
         setHeThongRap(response.data.content);
       }
     } catch (error) {
       console.error("Lỗi khi lấy thông tin hệ thống rạp:", error);
-      // Xử lý lỗi nếu cần
     }
   };
   useEffect(() => {
@@ -191,13 +179,10 @@ export default function MovieManagement() {
     try {
       const response = await movieService.getHeThongCumRap(maHeThongRap);
       if (response.data) {
-        console.log(response.data.content);
-        // Lưu danh sách cụm rạp vào state
         setCumRapList(response.data.content);
       }
     } catch (error) {
       console.error("Lỗi khi lấy thông tin cụm rạp:", error);
-      // Xử lý lỗi nếu cần
     }
   };
   const renderCumRapList = () => {
@@ -222,8 +207,6 @@ export default function MovieManagement() {
   //hàm này để tạo lịch chiếu
   const handleTaoLichChieu = async (event) => {
     event.preventDefault();
-    console.log(state);
-    // Lấy giá trị hệ thống rạp, cụm rạp, ngày chiếu, giờ chiếu, giá vé từ state
     const { cumRap, ngayKhoiChieu, giaVe, maPhim } = state;
     if (!giaVe) {
       setGiaVeError("Giá vé không được để trống.");
@@ -236,11 +219,10 @@ export default function MovieManagement() {
     }
     try {
       const ngayChieuGioChieu = formatDateToSendTaoLichChieu(ngayKhoiChieu);
-      // Tạo một đối tượng chứa các giá trị để gửi đi trong yêu cầu API
       const lichChieuData = {
-        maPhim: maPhim, // Sử dụng giá trị maPhim từ state
+        maPhim: maPhim,
         maRap: cumRap,
-        ngayChieuGioChieu: ngayChieuGioChieu, // Ngày chiếu và giờ chiếu
+        ngayChieuGioChieu: ngayChieuGioChieu,
         giaVe: giaVe,
       };
       if (
@@ -248,7 +230,6 @@ export default function MovieManagement() {
           `Bạn có chắc muốn tạo lịch chiếu cho phim ${state.tenPhim} không?`
         )
       ) {
-        // Gọi API để tạo lịch chiếu với dữ liệu đã tạo ở trên
         const response = await movieService.createLichChieu(lichChieuData);
         if (response.data) {
           alert("Tạo lịch chiếu thành công!");
@@ -269,8 +250,52 @@ export default function MovieManagement() {
   };
   //validation giá vé
   const [giaVeError, setGiaVeError] = useState("");
+  //hàm search
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const handleSearchInputChange = (event) => {
+    setSearchInput(event.target.value);
+  };
+  const [searchInitiated, setSearchInitiated] = useState(false);
+  const handleSearchClick = async () => {
+    try {
+      if (searchInput.trim() === "") {
+        alert("Vui lòng nhập từ khóa tìm kiếm.");
+      } else {
+        const response = await movieService.searchMovies(searchInput);
+        if (response.data) {
+          setSearchResult(response.data.content);
+          setCurrentPage(1);
+          setSearchInitiated(true); 
+          setShowAllButtonVisible(true);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm phim:", error);
+      alert("Có lỗi xảy ra khi tìm kiếm phim. Vui lòng thử lại.");
+    }
+  };
+  const [showAllButtonVisible, setShowAllButtonVisible] = useState(false);
+  const [showAllMovies, setShowAllMovies] = useState(true);
+  const handleShowAllClick = () => {
+    setShowAllMovies(true);
+    setSearchInput("");
+    setSearchResult([]); 
+    setCurrentPage(1); 
+    setShowAllButtonVisible(false);
+  };
+  const currentMovies = showAllMovies
+    ? movieList.slice(indexOfFirstMovie, indexOfLastMovie)
+    : searchResult.slice(indexOfFirstMovie, indexOfLastMovie);
+  const pageNumbers = [];
+  const totalMovies = showAllMovies ? movieList.length : searchResult.length;
+  for (let i = 1; i <= Math.ceil(totalMovies / moviesPerPage); i++) {
+    pageNumbers.push(i);
+  }
   const renderContent = () => {
-    return currentMovies.map((element) => {
+    const moviesToRender =
+      searchResult.length > 0 ? searchResult : currentMovies;
+    return moviesToRender.map((element) => {
       return (
         <tr key={element.maPhim}>
           <td>{element.maPhim}</td>
@@ -369,16 +394,33 @@ export default function MovieManagement() {
             <div className="col-12 form-group has-search mt-16">
               <div className="form-group mb-0">
                 <div className="row">
-                  <div className="col-11">
+                  <div className="col-9">
                     <input
                       type="text"
-                      placeholder="Search by name..."
+                      placeholder="Nhập tên phim..."
                       className="form-control"
+                      value={searchInput}
+                      onChange={handleSearchInputChange}
                     />
                   </div>
                   <div className="col-1">
-                    <button className="btn btn-danger">Tìm</button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={handleSearchClick}
+                    >
+                      Tìm
+                    </button>
                   </div>
+                  {showAllButtonVisible && (
+                    <div className="col-2">
+                      <button
+                        className="btn btn-primary"
+                        onClick={handleShowAllClick}
+                      >
+                        Xem tất cả
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -610,7 +652,9 @@ export default function MovieManagement() {
           <div className="modal-content">
             {/* Modal Header */}
             <div className="modal-header">
-              <h4 className="modal-title text-danger">Tạo Lịch Chiếu - {state.tenPhim}</h4>
+              <h4 className="modal-title text-danger">
+                Tạo Lịch Chiếu - {state.tenPhim}
+              </h4>
               <button
                 onClick={handleCloseModal}
                 type="button"
@@ -628,8 +672,8 @@ export default function MovieManagement() {
                 <div className="form-group">
                   <label>Hệ thống rạp:</label>
                   <select
-                    value={selectedHeThongRap} // Giá trị đã chọn từ state
-                    onChange={handleHeThongRapChange} // Sự kiện thay đổi hệ thống rạp
+                    value={selectedHeThongRap}
+                    onChange={handleHeThongRapChange}
                     name="heThongRap"
                     className="form-control"
                   >

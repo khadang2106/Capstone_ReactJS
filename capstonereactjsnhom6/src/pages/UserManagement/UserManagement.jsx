@@ -47,7 +47,7 @@ export default function MovieManagement() {
         taiKhoanRef,
         "Tài khoản không được để trống!"
       );
-    };
+    }
     //validation matKhau
     isValid &=
       validationRequired(
@@ -114,15 +114,25 @@ export default function MovieManagement() {
             `Bạn có chắc muốn cập nhật người dùng ${state.taiKhoan} không?`
           )
         ) {
-          await dispatch(updateUserAction(userData));
+          try {
+            await dispatch(updateUserAction(userData));
+          } catch (error) {
+            console.error("Lỗi khi cập nhật người dùng:", error);
+            alert("Có lỗi xảy ra khi cập nhật người dùng. Vui lòng thử lại.");
+          }
         }
       } else {
-        //thêm mới
-        if (window.confirm("Bạn có chắc muốn thêm người dùng này không?")) {
-          const response = await userService.addUserApi(userData);
-          if (response && response.data.statusCode === 200) {
-            setAddSuccess(true);
+        try {
+          //thêm mới
+          if (window.confirm("Bạn có chắc muốn thêm người dùng này không?")) {
+            const response = await userService.addUserApi(userData);
+            if (response && response.data.statusCode === 200) {
+              setAddSuccess(true);
+            }
           }
+        } catch (error) {
+          console.error("Lỗi khi thêm người dùng:", error);
+          alert("Có lỗi xảy ra khi thêm người dùng. Vui lòng thử lại.");
         }
       }
     }
@@ -268,7 +278,6 @@ export default function MovieManagement() {
   };
   //hàm check validation hoTen nhập chữ
   const validationHoTen = (value, ref, message) => {
-    console.log(12333333);
     const regexOnlyLetters =
       /^[a-zA-Z_ÀÁÂÃÈÉÊẾÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷýỹ\s]+$/;
     if (regexOnlyLetters.test(value)) {
@@ -359,7 +368,6 @@ export default function MovieManagement() {
       );
     });
   };
-
   return (
     <div className="container">
       <h2
@@ -611,7 +619,7 @@ export default function MovieManagement() {
                 <span ref={maLoaiNguoiDungRef} className="text-danger"></span>
                 <br />
                 {/**SỐ ĐIỆN THOẠI */}
-                <div className="form-group" >
+                <div className="form-group">
                   <label className="font-weight-bold">Số điện thoại</label>
                   <input
                     onChange={handleChange}
