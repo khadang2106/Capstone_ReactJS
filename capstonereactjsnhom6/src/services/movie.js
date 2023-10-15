@@ -59,6 +59,13 @@ class MovieService {
       data: lichChieuData,
     });
   };
+  //search movie
+  searchMovies(searchInput){
+    return request({
+      url: `/QuanLyPhim/LayDanhSachPhim?maNhom=GP01&tenPhim=${searchInput}`,
+      method: "GET",
+    });
+  }
 }
 //chỗ này new đối tượng trong đây để giải quyết vấn đề mỗi component khác nhau thì đều phải new hết
 //lúc này qua component nào cần xài thì chỉ cần gọi movieService ra thôi...

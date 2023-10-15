@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { OrderedListOutlined, UserOutlined } from "@ant-design/icons";
 import { Breadcrumb, Layout, Menu, theme } from "antd";
-import { NavLink, Outlet, useNavigate, useLocation } from "react-router-dom";
+import {
+  NavLink,
+  Outlet,
+  useNavigate,
+  useLocation,
+  Link,
+} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserInfoAction } from "../../store/actions/userAction";
 const { Header, Content, Footer, Sider } = Layout;
@@ -34,15 +40,28 @@ export default function AdminLayout() {
     if (userState.userInfo) {
       return (
         <>
-          <span>
-            Xin chào!{" "}
-            <span className="font-weight-bold text-danger">
-              {userState.userInfo.hoTen}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span>
+              Xin chào!{" "}
+              <span className="font-weight-bold text-danger">
+                {userState.userInfo.hoTen}
+              </span>
             </span>
-          </span>
-          <button onClick={logout} className="ml-3 btn btn-primary">
-            Đăng xuất
-          </button>
+            <div>
+              <Link to="/" className="btn btn-warning" style={{ marginLeft: "20px" }}>
+                Back Home
+              </Link>
+              <button onClick={logout} className="ml-3 btn btn-primary" >
+                Đăng xuất
+              </button>
+            </div>
+          </div>
         </>
       );
     }
