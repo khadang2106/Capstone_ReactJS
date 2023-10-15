@@ -35,7 +35,12 @@ export default function Header() {
     } else {
       return (
         <div className="user-header dropdown ml-sm-4 ml-1">
-          <a href className="user-profile" role="button" data-toggle="dropdown">
+          <a
+            href=""
+            className="user-profile"
+            role="button"
+            data-toggle="dropdown"
+          >
             <div className="user-info">
               <i
                 className="fa-solid fa-user mr-1"

@@ -22,22 +22,31 @@ export default function Login() {
   };
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // console.log(state);
-    const result = await userService.loginApi(state);
-    //trước khi dispatch thì lưu local để tránh trường hợp khi f5 lại thì data store mất hết
-    //chỗ lưu thì lưu file ở dạng chuỗi stringify
-    localStorage.setItem('USER_INFO', JSON.stringify(result.data.content));
-    dispatch(setUserInfoAction(result.data.content));
 
-    Swal.fire({
-      position: 'center',
-      icon: 'success',
-      title: 'Login successfully!',
-      showConfirmButton: false,
-      timer: 1500,
-    });
-    //sau khi login thành công thì chuyển về trang home
-    navigate('/');
+    try {
+      const result = await userService.loginApi(state);
+
+      localStorage.setItem('USER_INFO', JSON.stringify(result.data.content));
+      dispatch(setUserInfoAction(result.data.content));
+
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Login successfully!',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      navigate('/');
+    } catch (error) {
+      Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Login failed!',
+        text: error.response.data.content,
+        showConfirmButton: true,
+      });
+    }
   };
   return (
     <div className="w-25 mx-auto py-5 text-white">
