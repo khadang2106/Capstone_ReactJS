@@ -1,0 +1,551 @@
+.cybercine {
+  a {
+    text-decoration: none;
+    color: #eee;
+    &:hover {
+      text-decoration: none;
+      color: #eee;
+    }
+  }
+  .btn {
+    border-radius: 1.25rem;
+  }
+  .navbar .navbar-brand {
+    color: #eee;
+    font-size: 24px;
+    transition: all 0.3s ease;
+    &:hover {
+      color: #fb802d;
+    }
+  }
+  .navbar .navbar-nav .nav-link {
+    transition: all 0.3s ease;
+    &:hover {
+      color: #fb802d;
+    }
+  }
+
+  .nav-pills .logo-btn.nav-link.active {
+    background-color: unset;
+    border: 1px dotted #fb802d;
+  }
+  .nav-pills .nav-link {
+    border-radius: 5rem;
+  }
+
+  .cine-btn {
+    background-color: #fb802d;
+    border-color: #fb802d;
+    color: #eee;
+  }
+  .cine-btn:hover,
+  .cine-btn:focus {
+    background-color: #ec650a;
+    border-color: #ec6d18;
+    color: #eee;
+  }
+
+  .footer {
+    letter-spacing: 1px;
+    ul {
+      padding: 0;
+      margin: 0;
+    }
+    li {
+      list-style: none;
+      color: #eee;
+    }
+    a {
+      color: #eee;
+      text-decoration: none;
+      transition: all 0.5s;
+      &:hover {
+        color: #fb802d;
+      }
+    }
+    text-align: center;
+    background-color: #282828;
+    color: #eee;
+    .footer-socials {
+      a {
+        margin: 0 5px;
+
+        font-size: 1.3rem;
+        i {
+          transition: all 0.5s;
+          &:hover {
+            color: #fb802d;
+            animation: shake 1.5s linear 10;
+
+            @keyframes shake {
+              25% {
+                transform: rotate(-20deg);
+              }
+              50% {
+                transform: rotate(0);
+              }
+              75% {
+                transform: rotate(20deg);
+              }
+              100% {
+                transform: rotate(0);
+              }
+            }
+          }
+        }
+      }
+    }
+    .footer-body {
+      a {
+        transition: all 0.5s;
+      }
+      li {
+        margin: 10px 0;
+        a {
+          &:hover {
+            color: #fb802d;
+          }
+        }
+      }
+      .content {
+        i {
+          font-size: 30px;
+          margin-right: 10px;
+          color: #fb802d;
+        }
+        .footer-item__top {
+          font-size: 25px;
+          font-weight: 600;
+          vertical-align: bottom;
+          margin-bottom: 15px;
+        }
+        p {
+          padding-right: 3rem;
+          margin-top: 20px;
+          font-size: 15px;
+          font-weight: 300;
+        }
+      }
+      .footer-item {
+        a {
+          font-size: 15px;
+          font-weight: 300;
+        }
+        padding: 20px 10px;
+        text-align: left;
+      }
+      .contact {
+        i {
+          margin-right: 10px;
+        }
+      }
+    }
+    .footer-copyright {
+      padding: 17px;
+      border-top: 1px rgba(255, 255, 255, 0.612) solid;
+      a {
+        transition: all 0.5s ease;
+      }
+      .d-flex {
+        align-items: baseline;
+      }
+      .d-lg-flex {
+        align-items: center;
+      }
+      .footer-copyright__text {
+        a {
+          color: #fb802d;
+          display: inline-block;
+          &:hover {
+            color: #eee;
+            animation: scaleLogo 1s ease-in infinite;
+
+            @keyframes scaleLogo {
+              0% {
+                transform: scale(1);
+              }
+              100% {
+                transform: scale(1.1);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    @media screen and (max-width: 567.98px) {
+      .footer-body {
+        padding-left: 15px;
+      }
+    }
+  }
+}
+
+.movie-detail-text {
+  color: #eee;
+}
+
+.showtimes-info {
+  color: #eee;
+}
+
+.main {
+  background: #1d1d1d;
+
+  // Swiper
+  .swiper-pagination-bullet {
+    background: #fb802d;
+  }
+  .swiper-button-prev,
+  .swiper-button-next {
+    font-weight: 600;
+    opacity: 0.5;
+    color: #fb802d;
+    transition: all 0.3s ease;
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  // Movie-card
+  .movie-card {
+    border: none;
+    overflow: hidden;
+    background-color: transparent;
+    &:hover {
+      .movie-img .overlay-card {
+        opacity: 1;
+        .actions-btn {
+          bottom: 30px;
+        }
+      }
+      .movie-img::before {
+        left: 125%;
+      }
+    }
+    .card-body {
+      color: #eee;
+      padding: 1rem 0 0;
+    }
+    .card-title {
+      font-size: 1.1rem;
+    }
+    .movie-img {
+      position: relative;
+
+      .overlay-card {
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.4);
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: all 0.75s;
+        .actions-btn {
+          font-size: 15px;
+          padding: 0.3rem 0.5rem;
+          position: absolute;
+          bottom: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          transition: all 0.5s;
+        }
+      }
+    }
+  }
+}
+
+.user-header {
+  .dropdown-menu a.dropdown-item {
+    color: #1d1d1d;
+  }
+  .user-profile {
+    display: flex;
+    align-items: center;
+    border-left: 1px solid #eee;
+    color: #eee;
+    transition: all 0.5s ease;
+    &:hover {
+      text-decoration: none;
+      color: #fb802d;
+    }
+    .user-info {
+      color: #fb802d;
+      padding-left: 15px;
+      text-align: left;
+      cursor: pointer;
+    }
+  }
+
+  .dropdown-menu {
+    i {
+      margin-right: 5px;
+    }
+    .logout i {
+      color: red;
+    }
+    .profile i {
+      color: #1740d4;
+    }
+  }
+}
+
+//Responsive
+.user-header {
+  .user-info {
+    @media screen and (max-width: 851px) {
+      font-size: 15px;
+    }
+    @media screen and (max-width: 604px) {
+      display: none;
+    }
+  }
+  .dropdown-menu {
+    @media screen and (max-width: 604px) {
+      left: -45px;
+    }
+    @media screen and (max-width: 445px) {
+      left: -70px;
+    }
+    @media screen and (max-width: 376px) {
+      left: -85px;
+    }
+  }
+  .user-profile {
+    @media screen and (max-width: 444px) {
+      padding-left: 15px;
+      img {
+        height: 30px;
+        width: 30px;
+      }
+    }
+    @media screen and (max-width: 376px) {
+      padding-left: 5px;
+      border: none;
+      img {
+        height: 25px;
+        width: 25px;
+      }
+    }
+  }
+  .dropdown {
+    @media screen and (max-width: 356px) {
+      margin: 0 !important;
+    }
+  }
+}
+
+.movie-nav-pills {
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #2d2d2d;
+  border-radius: 5rem;
+  padding: 10px;
+  .nav-item {
+    &:hover {
+      .nav-link {
+        color: #fb802d;
+      }
+    }
+  }
+  .nav-item .nav-link {
+    padding: 8px 15px;
+    border-radius: 5rem;
+    color: #eee;
+    transition: all 0.3s;
+  }
+  .nav-item .nav-link.active {
+    color: black;
+    background: white;
+  }
+}
+
+.detail,
+.showtimes {
+  color: #eee;
+  h2 {
+    margin: 0;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+.detail {
+  .movie-name {
+    font-size: 2rem;
+    letter-spacing: 2px;
+  }
+  .nav-pills {
+    background-color: #2d2d2d;
+    border-radius: 5rem;
+    padding: 5px;
+    justify-content: space-evenly;
+    .nav-link.active {
+      background: #fb802d;
+    }
+  }
+}
+
+.showtimes {
+  .time-item {
+    border: 1px solid #cbcabe;
+    padding: 5px 15px;
+    font-size: 17px;
+  }
+}
+
+.ticket-booking {
+  .row {
+    margin-left: 0;
+  }
+  .ticket-booking-title {
+    margin: 0;
+    border-bottom: 1px solid #eee;
+    color: #eee;
+  }
+  .screen {
+    font-weight: normal;
+    font-size: 24px;
+    color: #eee;
+    display: block;
+    background-color: #969696;
+    border: 1px solid #eee;
+    border-radius: 25px;
+    line-height: 42px;
+    box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .btn:disabled {
+    color: #eee;
+    background-color: #d12020;
+    cursor: not-allowed;
+  }
+  .note {
+    color: #eee;
+    font-size: 15px;
+  }
+  .note-icon::before {
+    content: '';
+    display: inline-block;
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 0 5px 0 0;
+  }
+  .note-icon.unavailable-seat::before {
+    background: #d12020;
+  }
+  .note-icon.available-seat::before {
+    background: #007bff;
+  }
+  .note-icon.standard-seat::before {
+    border: 1px solid #6c757d;
+  }
+  .note-icon.vip-seat::before {
+    border: 1px solid #ffc107;
+  }
+
+  .checkout-zone {
+    border-radius: 20px;
+  }
+  .booking-info {
+    h4 {
+      font-size: 1rem;
+      span {
+        font-style: italic;
+      }
+    }
+  }
+  .receipt {
+    .badge {
+      font-size: 65%;
+    }
+    .badge-success {
+      background-color: #fb802d;
+    }
+  }
+  .booking-btn {
+    button {
+      font-weight: 700;
+      color: #eee;
+      background-color: #fb802d;
+      border-color: #fb802d;
+      &:hover,
+      &:focus {
+        background-color: #ec650a;
+        border-color: #ec6d18;
+      }
+    }
+  }
+}
+
+.account-profile {
+  border-radius: 20px;
+  p {
+    margin: 0;
+    padding: 0;
+  }
+  .account-profile-left {
+    border-right: 1px solid black;
+  }
+  button {
+    font-size: 12px;
+    font-weight: 700;
+    color: #2d2d2d;
+    background-color: transparent;
+    border: 2px dotted #fb802d;
+    transition: all 0.3s ease;
+    &:hover {
+      background-color: #fb802d;
+      color: #eee;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
+  .nav-pills .nav-link.active {
+    background-color: #ec650a;
+    border-color: #ec6d18;
+  }
+
+  .account-profile-right {
+    h4 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #fb802d;
+      font-weight: 700;
+    }
+    .btn {
+      color: #eee;
+      background-color: #343a40;
+      border-color: #343a40;
+      border-radius: 0.5rem;
+      padding: 0.3rem 1.25rem;
+    }
+    #account-info img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 1px solid #343a40;
+    }
+    #account-info p {
+      font-size: 14px;
+      color: #5a5959;
+    }
+    #transactions-history img {
+      width: 100px;
+      height: 140px;
+      object-fit: fill;
+    }
+    .page-item.active .page-link {
+      background-color: #ec650a;
+      border-color: #ec6d18;
+    }
+    .badge-success {
+      background-color: #fb802d;
+    }
+  }
+}

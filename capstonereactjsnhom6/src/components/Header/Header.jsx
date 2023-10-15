@@ -1,13 +1,15 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
-import { setUserInfoAction } from "../../store/actions/userAction";
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { setUserInfoAction } from '../../store/actions/userAction';
+import Swal from 'sweetalert2';
 //lý do tách component ở đây là do mình tái sử dụng code do những page nào cũng có cùng header và footer
 export default function Header() {
   //userState để check user trước đó người dùng có đăng nhập hay chưa? nếu có rồi thì ẩn 2 nút này
   const userState = useSelector((state) => state.userReducer);
+
   const navigate = useNavigate();
-  console.log(userState);
+
   const dispatch = useDispatch();
   //hàm này để render 2 nút login và register theo điều kiện đã đăng nhập hay chưa
   const renderContent = () => {
@@ -16,13 +18,14 @@ export default function Header() {
       return (
         <>
           <button
+            onClick={() => navigate('/register')}
             className="btn btn-outline-info my-2 my-sm-0 mr-2"
             type="sumit"
           >
             Register
           </button>
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate('/login')}
             className="btn btn-outline-success my-2 my-sm-0"
           >
             Login
@@ -30,28 +33,63 @@ export default function Header() {
         </>
       );
     } else {
-      return <>
-      <span>Hello {userState.userInfo.hoTen}</span>
-      <button onClick={logout} className="ml-3 btn btn-primary">Log Out</button>
-      </>;
+      return (
+        <div className="user-header dropdown ml-sm-4 ml-1">
+          <a href className="user-profile" role="button" data-toggle="dropdown">
+            <div className="user-info">
+              <i
+                className="fa-solid fa-user mr-1"
+                style={{ fontSize: '16px' }}
+              />
+              Welcome {userState.userInfo.hoTen}
+            </div>
+          </a>
+          <div className="dropdown-menu">
+            <button
+              onClick={() => navigate('/profile')}
+              className="dropdown-item profile"
+            >
+              <i className="fa-solid fa-user" />
+              Profile
+            </button>
+            <button onClick={logout} className="dropdown-item logout">
+              <i className="fa-solid fa-arrow-right-from-bracket" />
+              Log Out
+            </button>
+          </div>
+        </div>
+      );
     }
   };
   //hàm này để khi click vào button log out thì sẽ xóa local và set lại giá trị userInfo
   const logout = () => {
-    //XÓA LOCAL
-    localStorage.removeItem("USER_INFO");
-    //set lại giá trị userinfo
-    dispatch(setUserInfoAction(null));
-    //logout thành công thì chuyển về trang home
-    navigate("/");
-  }
+    Swal.fire({
+      title: 'Are you sure?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //XÓA LOCAL
+        localStorage.removeItem('USER_INFO');
+        //set lại giá trị userinfo
+        dispatch(setUserInfoAction(null));
+        //logout thành công thì chuyển về trang home
+        navigate('/');
+      }
+    });
+  };
   //chỗ Home bên dưới dùng NavLink để khi ở trang login bấm vào tag Home thì nó không load lại trang...
   return (
-    <nav className="navbar navbar-expand-sm navbar-light bg-light">
-      <a className="navbar-brand" href="#">
-        {" "}
-        Movie{" "}
-      </a>
+    <nav
+      className="navbar navbar-expand-sm navbar-dark"
+      style={{ background: '#1d1d1d' }}
+    >
+      <NavLink className="navbar-brand" to={'/'}>
+        CyberCine
+      </NavLink>
       <button
         className="navbar-toggler d-lg-none"
         type="button"
@@ -67,8 +105,12 @@ export default function Header() {
         <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
           <li className="nav-item active">
             <NavLink className="nav-link" to="/">
-              {" "}
-              Home{" "}
+              Home
+            </NavLink>
+          </li>
+          <li className="nav-item active">
+            <NavLink className="nav-link" to="/admin">
+              Admin
             </NavLink>
           </li>
         </ul>
@@ -77,4 +119,3 @@ export default function Header() {
     </nav>
   );
 }
-
