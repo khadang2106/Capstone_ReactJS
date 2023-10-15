@@ -124,7 +124,7 @@ export default function TicketBooking() {
               'success'
             );
 
-            navigate('/profile#transactions-history');
+            navigate('/profile');
           } else {
             Swal.fire('Booking failed', 'Please try again later', 'error');
           }
@@ -199,7 +199,7 @@ export default function TicketBooking() {
             </div>
             <div className="booking-btn my-auto col-2">
               <button onClick={handleBookTicket} className="btn btn-warning">
-                Proceed to Checkout
+                Proceed to Checkout <br />
                 <i className="fa-solid fa-arrow-right" />
               </button>
             </div>

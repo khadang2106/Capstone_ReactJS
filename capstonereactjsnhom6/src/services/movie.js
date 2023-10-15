@@ -1,41 +1,41 @@
-import { request } from "../configs/api";
+import { request } from '../configs/api';
 class MovieService {
   //phương thức call api lấy danh sách phim
   fetMovieListApi() {
     return request({
-      url: "/QuanLyPhim/LayDanhSachPhim?maNhom=GP01",
-      method: "GET",
+      url: '/QuanLyPhim/LayDanhSachPhim?maNhom=GP01',
+      method: 'GET',
     });
   }
   //phương thức này là để call api lấy chi tiết từng phim
   fetMovieDetailApi(movieId) {
     return request({
-        //header là 1 đối tượng dùng để cung cấp token khi call api nếu không có token thì nó sẽ báo lỗi 403 hết hạn
-        url: `/QuanLyPhim/LayThongTinPhim?MaPhim=${movieId}`,
-        method: "GET",
-      });
-  };
+      //header là 1 đối tượng dùng để cung cấp token khi call api nếu không có token thì nó sẽ báo lỗi 403 hết hạn
+      url: `/QuanLyPhim/LayThongTinPhim?MaPhim=${movieId}`,
+      method: 'GET',
+    });
+  }
   //thêm phim
   addMovie(formData) {
     return request({
-      url: "/quanlyphim/themphimuploadhinh",
-      method: "POST",
-      data: formData
+      url: '/quanlyphim/themphimuploadhinh',
+      method: 'POST',
+      data: formData,
     });
-  };
+  }
   //cập nhật phim
   updateMovie(formData) {
     return request({
-      url: "/QuanLyPhim/CapNhatPhimUpload",
-      method: "POST",
-      data: formData
+      url: '/QuanLyPhim/CapNhatPhimUpload',
+      method: 'POST',
+      data: formData,
     });
-  };
+  }
   //xóa phim
   deleteMovie(maPhim) {
     return request({
       url: `/QuanLyPhim/XoaPhim?MaPhim=${maPhim}`,
-      method: "DELETE",
+      method: 'DELETE',
     });
   };
   //lấy hệ thống rạp

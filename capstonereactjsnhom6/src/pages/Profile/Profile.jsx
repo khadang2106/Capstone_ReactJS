@@ -13,7 +13,9 @@ export default function Profile() {
   const [transactionsList, setTransactionList] = useState([]);
 
   useEffect(() => {
-    fetchUserProfile();
+    if (userState.userInfo !== null) {
+      fetchUserProfile();
+    }
   }, []);
 
   const fetchUserProfile = async () => {
@@ -83,61 +85,35 @@ export default function Profile() {
             aria-orientation="vertical"
           >
             <button
-              className="nav-link active mb-2"
-              id="v-pills-home-tab"
-              data-toggle="pill"
-              data-target="#account-info"
-              type="button"
-              role="tab"
-              aria-controls="account-info"
-              aria-selected="true"
-            >
-              ACCOUNT INFORMATION
-            </button>
-            <button
-              className="nav-link"
+              className="nav-link  active mb-2"
               id="v-pills-profile-tab"
               data-toggle="pill"
               data-target="#transactions-history"
               type="button"
               role="tab"
               aria-controls="transactions-history"
-              aria-selected="false"
+              aria-selected="true"
             >
               TRANSACTIONS HISTORY
+            </button>
+            <button
+              className="nav-link"
+              id="v-pills-home-tab"
+              data-toggle="pill"
+              data-target="#account-info"
+              type="button"
+              role="tab"
+              aria-controls="account-info"
+              aria-selected="false"
+            >
+              ACCOUNT INFORMATION
             </button>
           </div>
         </div>
         <div className="col-9 account-profile-right">
           <div className="tab-content" id="v-pills-tabContent">
             <div
-              className="tab-pane fade show active"
-              id="account-info"
-              role="tabpanel"
-              aria-labelledby="v-pills-home-tab"
-            >
-              <h4>ACCOUNT INFORMATION</h4>
-              <div className="row">
-                <div className="col-4 text-center">
-                  <img
-                    className="img-fluid"
-                    src="https://vora.dexignlab.com/react/demo/static/media/17.a7b6b9cb820bffd162bf.jpg"
-                    alt=""
-                  />
-                </div>
-                <div className="col-5">
-                  <h5>Contact Information</h5>
-                  <p>Name: {hoTen}</p>
-                  <p>Email: {email}</p>
-                  <p>Telephone: {soDT}</p>
-                </div>
-                <div className="col-3">
-                  <button className="btn btn-dark">Edit</button>
-                </div>
-              </div>
-            </div>
-            <div
-              className="tab-pane fade"
+              className="tab-pane fade  show active"
               id="transactions-history"
               role="tabpanel"
               aria-labelledby="v-pills-profile-tab"
@@ -167,6 +143,32 @@ export default function Profile() {
                   ))}
                 </ul>
               </nav>
+            </div>
+            <div
+              className="tab-pane fade"
+              id="account-info"
+              role="tabpanel"
+              aria-labelledby="v-pills-home-tab"
+            >
+              <h4>ACCOUNT INFORMATION</h4>
+              <div className="row">
+                <div className="col-4 text-center">
+                  <img
+                    className="img-fluid"
+                    src="https://vora.dexignlab.com/react/demo/static/media/17.a7b6b9cb820bffd162bf.jpg"
+                    alt=""
+                  />
+                </div>
+                <div className="col-5">
+                  <h5>Contact Information</h5>
+                  <p>Name: {hoTen}</p>
+                  <p>Email: {email}</p>
+                  <p>Telephone: {soDT}</p>
+                </div>
+                <div className="col-3">
+                  <button className="btn btn-dark">Edit</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
