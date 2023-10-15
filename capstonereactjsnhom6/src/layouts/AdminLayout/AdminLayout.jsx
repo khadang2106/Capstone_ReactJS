@@ -35,22 +35,25 @@ export default function AdminLayout() {
       return (
         <>
           <span>
-            Hello{" "}
+            Xin chào!{" "}
             <span className="font-weight-bold text-danger">
               {userState.userInfo.hoTen}
             </span>
           </span>
           <button onClick={logout} className="ml-3 btn btn-primary">
-            Log Out
+            Đăng xuất
           </button>
         </>
       );
     }
   };
   const logout = () => {
-    localStorage.removeItem("USER_INFO");
-    dispatch(setUserInfoAction(null));
-    navigate("/");
+    if (window.confirm("Bạn có chắc muốn đăng xuất không?")) {
+      localStorage.removeItem("USER_INFO");
+      dispatch(setUserInfoAction(null));
+      navigate("/");
+      alert("Đăng xuất thành công!");
+    }
   };
   const location = useLocation();
   const selectedKey =

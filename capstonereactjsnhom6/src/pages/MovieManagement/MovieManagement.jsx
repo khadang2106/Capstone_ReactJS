@@ -1,12 +1,28 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useMovieList from "../../hooks/useMovieList";
 import Switch from "@mui/material/Switch";
 import { movieService } from "../../services/movie";
 import { NavLink } from "react-router-dom";
-
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 export default function MovieManagement() {
   const movieList = useMovieList();
   console.log(movieList);
+  //phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [moviesPerPage] = useState(10);
+  const indexOfLastMovie = currentPage * moviesPerPage;
+  const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+  const currentMovies = movieList.slice(indexOfFirstMovie, indexOfLastMovie);
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(movieList.length / moviesPerPage); i++) {
+    pageNumbers.push(i);
+  }
+
   const [state, setState] = useState({
     tenPhim: "",
     trailer: "",
@@ -17,6 +33,8 @@ export default function MovieManagement() {
     hot: false,
     danhGia: "",
     hinhAnh: null,
+    heThongRap: "",
+    giaVe: "",
   });
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -31,7 +49,6 @@ export default function MovieManagement() {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Tháng bắt đầu từ 0
     const year = date.getFullYear();
-
     return `${day}/${month}/${year}`;
   };
   const handleSubmit = async (event) => {
@@ -50,13 +67,23 @@ export default function MovieManagement() {
     try {
       if (state.maPhim) {
         // Nếu có mã phim, thì cập nhật phim
-        formData.append("maPhim", state.maPhim);
-        await movieService.updateMovie(formData);
-        alert("Cập nhật phim thành công!");
+        if (
+          window.confirm(
+            `Bạn có chắc muốn cập nhật người phim ${state.tenPhim} không?`
+          )
+        ) {
+          formData.append("maPhim", state.maPhim);
+          await movieService.updateMovie(formData);
+          alert("Cập nhật phim thành công!");
+          document.getElementById("close").click();
+        }
       } else {
         // Nếu không có mã phim, thì thêm phim mới
-        await movieService.addMovie(formData);
-        alert("Thêm phim thành công!");
+        if (window.confirm("Bạn có chắc muốn thêm phim này không?")) {
+          await movieService.addMovie(formData);
+          alert("Thêm phim thành công!");
+          document.getElementById("close").click();
+        }
       }
       // Cập nhật danh sách phim hoặc thực hiện các hành động khác nếu cần
     } catch (error) {
@@ -103,6 +130,7 @@ export default function MovieManagement() {
   const [isEditing, setIsEditing] = useState(false);
   const handleCloseModal = () => {
     setIsEditing(false);
+    resetLichChieuForm();
   };
   //hàm xóa phim
   const handleDeleteClick = async (maPhim) => {
@@ -118,14 +146,137 @@ export default function MovieManagement() {
       alert("Có lỗi xảy ra khi xóa phim. Vui lòng thử lại.");
     }
   };
+  //hàm này reset data trong form
+  const resetForm = () => {
+    setState({
+      tenPhim: "",
+      trailer: "",
+      moTa: "",
+      ngayKhoiChieu: "",
+      dangChieu: false,
+      sapChieu: false,
+      hot: false,
+      danhGia: "",
+      hinhAnh: "",
+    });
+  };
+  const handleAddMovieClick = () => {
+    resetForm();
+  };
+  //hàm này để lấy hệ thống rạp
+  const [heThongRap, setHeThongRap] = useState([]);
+  const fetchHeThongRap = async () => {
+    try {
+      const response = await movieService.getHeThongRap();
+      if (response.data) {
+        // Lưu thông tin hệ thống rạp vào state dưới dạng mảng
+        setHeThongRap(response.data.content);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin hệ thống rạp:", error);
+      // Xử lý lỗi nếu cần
+    }
+  };
+  useEffect(() => {
+    fetchHeThongRap();
+    setDefaultSelectedHeThongRap("");
+  }, []);
+  //hàm này để lấy cụm rạp dựa theo hệ thống rạp
+  const [cumRapList, setCumRapList] = useState([]);
+  const [selectedHeThongRap, setSelectedHeThongRap] = useState("");
+  const handleHeThongRapChange = async (event) => {
+    const maHeThongRap = event.target.value;
+    setSelectedHeThongRap(maHeThongRap);
+
+    try {
+      const response = await movieService.getHeThongCumRap(maHeThongRap);
+      if (response.data) {
+        console.log(response.data.content);
+        // Lưu danh sách cụm rạp vào state
+        setCumRapList(response.data.content);
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin cụm rạp:", error);
+      // Xử lý lỗi nếu cần
+    }
+  };
+  const renderCumRapList = () => {
+    return cumRapList.map((cumRap) => (
+      <option key={cumRap.maCumRap} value={cumRap.maCumRap}>
+        {cumRap.tenCumRap}
+      </option>
+    ));
+  };
+  //chuyển đổi định dạng khi tạo lịch chiếu
+  const formatDateToSendTaoLichChieu = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+  };
+  //hàm này để tạo lịch chiếu
+  const handleTaoLichChieu = async (event) => {
+    event.preventDefault();
+    console.log(state);
+    // Lấy giá trị hệ thống rạp, cụm rạp, ngày chiếu, giờ chiếu, giá vé từ state
+    const { cumRap, ngayKhoiChieu, giaVe, maPhim } = state;
+    if (!giaVe) {
+      setGiaVeError("Giá vé không được để trống.");
+      return;
+    } else if (!/^\d+$/.test(giaVe)) {
+      setGiaVeError("Giá vé chỉ được nhập số.");
+      return;
+    } else {
+      setGiaVeError("");
+    }
+    try {
+      const ngayChieuGioChieu = formatDateToSendTaoLichChieu(ngayKhoiChieu);
+      // Tạo một đối tượng chứa các giá trị để gửi đi trong yêu cầu API
+      const lichChieuData = {
+        maPhim: maPhim, // Sử dụng giá trị maPhim từ state
+        maRap: cumRap,
+        ngayChieuGioChieu: ngayChieuGioChieu, // Ngày chiếu và giờ chiếu
+        giaVe: giaVe,
+      };
+      if (
+        window.confirm(
+          `Bạn có chắc muốn tạo lịch chiếu cho phim ${state.tenPhim} không?`
+        )
+      ) {
+        // Gọi API để tạo lịch chiếu với dữ liệu đã tạo ở trên
+        const response = await movieService.createLichChieu(lichChieuData);
+        if (response.data) {
+          alert("Tạo lịch chiếu thành công!");
+          document.getElementById("closeTaoLichChieu").click();
+          resetLichChieuForm();
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi tạo lịch chiếu:", error);
+      alert(" Vui lòng chọn đầy đủ thông tin và thử lại!");
+    }
+  };
+  //reset form tạo lịch chiếu
+  const [defaultSelectedHeThongRap, setDefaultSelectedHeThongRap] =
+    useState("");
+  const resetLichChieuForm = () => {
+    setSelectedHeThongRap(defaultSelectedHeThongRap);
+  };
+  //validation giá vé
+  const [giaVeError, setGiaVeError] = useState("");
   const renderContent = () => {
-    return movieList.map((element) => {
+    return currentMovies.map((element) => {
       return (
         <tr key={element.maPhim}>
           <td>{element.maPhim}</td>
           <td>
             <img
-              style={{ height: 350, objectFit: "cover" }}
+              style={{ height: "150px", width: "auto", objectFit: "contain" }}
               className="card-img-top"
               src={element.hinhAnh}
               alt="movie"
@@ -134,20 +285,32 @@ export default function MovieManagement() {
           <td>{element.tenPhim}</td>
           <td>{element.moTa}</td>
           <td>
-            <button
-              onClick={() => handleEditClick(element.maPhim)}
-              className="btn btn-info mr-2 "
-              data-toggle="modal"
-              data-target="#myModal"
-            >
-              SỬA
-            </button>
-            <button
-              onClick={() => handleDeleteClick(element.maPhim)}
-              className="btn btn-danger"
-            >
-              XÓA
-            </button>
+            <div className="btn-group">
+              <button
+                onClick={() => handleEditClick(element.maPhim)}
+                className="btn btn-info"
+                data-toggle="modal"
+                data-target="#myModal"
+              >
+                <EditIcon fontSize="small" />
+              </button>
+              <button
+                onClick={() => handleDeleteClick(element.maPhim)}
+                className="btn btn-danger"
+              >
+                <DeleteIcon fontSize="small" />
+              </button>
+              <button
+                onClick={() => {
+                  handleEditClick(element.maPhim);
+                }}
+                className="btn btn-primary"
+                data-toggle="modal"
+                data-target="#myModalTaoLichChieu"
+              >
+                <CalendarTodayIcon fontSize="small" />
+              </button>
+            </div>
           </td>
         </tr>
       );
@@ -183,7 +346,7 @@ export default function MovieManagement() {
       {/* Tab panes */}
       <div className="tab-content">
         {/*Danh sách đối tượng */}
-        <div role="tabpanel" className="tab-pane in active" id="DanhSachSP">
+        <div role="tabpanel" className="tab-pane in active">
           <div className="row">
             <div
               className="col-8 d-flex justify-content-end "
@@ -191,13 +354,14 @@ export default function MovieManagement() {
             >
               {/* BEGIN BUTTOM THÊM MỚI */}
               <button
+                onClick={handleAddMovieClick}
                 id="btnAddUser"
                 className="btn btn-success mr-auto"
                 data-toggle="modal"
                 data-target="#myModal"
               >
                 <i className="fa fa-plus mr-1" />
-                Thêm Phim
+                Thêm phim
               </button>
               {/* END BUTTON THÊM MỚI */}
             </div>
@@ -236,6 +400,53 @@ export default function MovieManagement() {
               </thead>
               <tbody>{renderContent()}</tbody>
             </table>
+            <ul className="pagination">
+              <li
+                className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => {
+                    if (currentPage > 1) {
+                      handlePageChange(currentPage - 1);
+                    }
+                  }}
+                >
+                  Prev
+                </button>
+              </li>
+              {pageNumbers.map((number) => (
+                <li
+                  key={number}
+                  className={`page-item ${
+                    currentPage === number ? "active" : ""
+                  }`}
+                >
+                  <button
+                    className="page-link"
+                    onClick={() => handlePageChange(number)}
+                  >
+                    {number}
+                  </button>
+                </li>
+              ))}
+              <li
+                className={`page-item ${
+                  currentPage === pageNumbers.length ? "disabled" : ""
+                }`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => {
+                    if (currentPage < pageNumbers.length) {
+                      handlePageChange(currentPage + 1);
+                    }
+                  }}
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
             {/* END TABLE SẢN PHẨM */}
           </div>
           <br />
@@ -244,13 +455,15 @@ export default function MovieManagement() {
       </div>
       {/*KetThuc Tabmenu*/}
 
-      {/* The Modal */}
+      {/* The Modal Thêm Phim Và Cập Nhật Phim */}
       <div className="modal fade" id="myModal">
         <div className="modal-dialog">
           <div className="modal-content">
             {/* Modal Header */}
             <div className="modal-header">
-              <h4 className="modal-title text-danger">Thêm phim</h4>
+              <h4 className="modal-title text-danger">
+                {isEditing ? "Cập nhật phim" : "Thêm phim mới"}
+              </h4>
               <button
                 onClick={handleCloseModal}
                 type="button"
@@ -274,12 +487,6 @@ export default function MovieManagement() {
                     className="form-control"
                     placeholder="Nhập tên phim..."
                   />
-                  {/* validation ID */}
-                  <div
-                    className="text-danger"
-                    style={{ display: "none" }}
-                    id="errorID"
-                  />
                 </div>
                 {/* TRAILER */}
                 <div className="form-group">
@@ -290,11 +497,6 @@ export default function MovieManagement() {
                     name="trailer"
                     className="form-control"
                     placeholder="Nhập đường dẫn trailer..."
-                  />
-                  <div
-                    className="text-danger"
-                    style={{ display: "none" }}
-                    id="errorHoTen"
                   />
                 </div>
                 {/* MÔ TẢ */}
@@ -307,15 +509,10 @@ export default function MovieManagement() {
                     className="form-control"
                     placeholder="Nhập mô tả..."
                   />
-                  <div
-                    className="text-danger"
-                    style={{ display: "none" }}
-                    id="errorDiaChi"
-                  />
                 </div>
                 {/**NGÀY CHIẾU */}
                 <div className="form-group">
-                  <label>Ngày chiếu</label>
+                  <label>Ngày khởi chiếu</label>
                   <input
                     value={state.ngayKhoiChieu || ""}
                     onChange={handleChange}
@@ -368,11 +565,6 @@ export default function MovieManagement() {
                       style={{ width: "50px" }}
                     />
                   </div>
-                  <div
-                    className="text-danger"
-                    style={{ display: "none" }}
-                    id="errorDiaChi"
-                  />
                 </div>
                 {/**Hình ảnh */}
                 <div
@@ -398,9 +590,110 @@ export default function MovieManagement() {
                     />
                   )}
                 </div>
-                <button className="btn btn-primary">
-                  {isEditing ? "Cập nhật" : "Thêm phim"}
-                </button>
+                <div className="text-right">
+                  {isEditing ? (
+                    <button className="btn btn-primary">Cập nhật</button>
+                  ) : (
+                    <button className="btn btn-primary">Thêm</button>
+                  )}
+                </div>
+              </form>
+            </div>
+            {/* Modal footer */}
+            <div className="modal-footer" id="cancel" />
+          </div>
+        </div>
+      </div>
+      {/**THE MODAL TẠO LỊCH CHIẾU PHIM */}
+      <div className="modal fade" id="myModalTaoLichChieu">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            {/* Modal Header */}
+            <div className="modal-header">
+              <h4 className="modal-title text-danger">Tạo Lịch Chiếu - {state.tenPhim}</h4>
+              <button
+                onClick={handleCloseModal}
+                type="button"
+                className="close"
+                data-dismiss="modal"
+                id="closeTaoLichChieu"
+              >
+                ×
+              </button>
+            </div>
+            {/* Modal body */}
+            <div className="modal-body">
+              <form onSubmit={handleTaoLichChieu}>
+                {/* HỆ THỐNG RẠP */}
+                <div className="form-group">
+                  <label>Hệ thống rạp:</label>
+                  <select
+                    value={selectedHeThongRap} // Giá trị đã chọn từ state
+                    onChange={handleHeThongRapChange} // Sự kiện thay đổi hệ thống rạp
+                    name="heThongRap"
+                    className="form-control"
+                  >
+                    <option value="" disabled>
+                      Chọn hệ thống rạp
+                    </option>
+                    {heThongRap.map((rap) => (
+                      <option key={rap.maHeThongRap} value={rap.maHeThongRap}>
+                        {rap.tenHeThongRap}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {/* CỤM RẠP */}
+                <div className="form-group">
+                  <label>Cụm rạp:</label>
+                  <select
+                    value={state.cumRap || ""}
+                    onChange={handleChange}
+                    name="cumRap"
+                    className="form-control"
+                  >
+                    <option value="" disabled>
+                      Chọn cụm rạp
+                    </option>
+                    {renderCumRapList()}{" "}
+                    {/* Sử dụng hàm renderCumRapList để hiển thị danh sách cụm rạp */}
+                  </select>
+                </div>
+                {/**NGÀY CHIẾU - GIỜ CHIẾU */}
+                <div className="form-group">
+                  <label>Ngày chiếu - Giờ chiếu:</label>
+                  <input
+                    value={state.ngayChieuGioChieu || ""}
+                    onChange={handleChange}
+                    type="datetime-local"
+                    name="ngayChieuGioChieu"
+                    className="form-control"
+                  />
+                </div>
+                {/**GIÁ VÉ */}
+                <div className="form-group">
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <label style={{ marginRight: "10px" }}>Giá vé:</label>
+                    <input
+                      value={state.giaVe || ""}
+                      onChange={handleChange}
+                      name="giaVe"
+                      className="form-control"
+                      style={{ width: "100px" }}
+                    />
+                  </div>
+                  {giaVeError && (
+                    <div className="text-danger">{giaVeError}</div>
+                  )}
+                </div>
+                <div className="text-right">
+                  <button className="btn btn-primary">Tạo</button>
+                </div>
               </form>
             </div>
             {/* Modal footer */}
